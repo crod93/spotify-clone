@@ -6,7 +6,6 @@ import {
   ListItem,
   ListIcon,
   Divider,
-  Center,
   LinkBox,
   LinkOverlay,
 } from '@chakra-ui/layout';
@@ -52,8 +51,6 @@ const musicMenu = [
 const playlist = new Array(30)
   .fill(1)
   .map((_, index) => `Playlist ${index + 1}`);
-
-console.log(playlist);
 
 const Sidebar = () => {
   return (
