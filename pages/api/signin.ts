@@ -5,41 +5,46 @@ import prisma from '../../lib/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
-
-  if (user && bcrypt.compareSync(password, user.password)) {
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        time: Date.now(),
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
       },
-      'hello',
-      {
-        expiresId: '8h',
-      }
-    );
+    });
 
-    res.setHeader(
-      'Set-Cookie',
-      cookie.serialize('TRAX_ACCESS_TOKEN', token, {
-        httpOnly: true,
-        maxAge: '6h',
-        path: '/',
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-      })
-    );
+    if (user && bcrypt.compareSync(password, user.password)) {
+      const token = jwt.sign(
+        {
+          id: user.id,
+          email: user.email,
+          time: Date.now(),
+        },
+        'hello',
+        {
+          expiresIn: '8h',
+        }
+      );
 
-    res.json(user);
-  } else {
-    res.status(401);
-    res.json({ error: 'Email or Password is wrong' });
+      res.setHeader(
+        'Set-Cookie',
+        cookie.serialize('TRAX_ACCESS_TOKEN', token, {
+          httpOnly: true,
+          maxAge: 8 * 60 * 60,
+          path: '/',
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production',
+        })
+      );
+
+      res.json(user);
+    } else {
+      res.status(401);
+      res.json({ error: 'Email or Password is wrong' });
+    }
+  } catch (error) {
+    console.error('Server error', error);
+    res.status(500);
   }
 };

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db-studio": "npx prisma studio"
   },
   "dependencies": {
     "@chakra-ui/layout": "^1.5.1",

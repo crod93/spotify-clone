@@ -12,12 +12,19 @@ const AuthForm: FC<{ mode: 'signin' | 'signup' }> = ({ mode }) => {
   const router = useRouter();
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    setIsLoading(true);
+    try {
+      event.preventDefault();
+      setIsLoading(true);
 
-    await auth(mode, { email, password });
-    setIsLoading(false);
-    router.push('/');
+      const user = await auth(mode, { email, password });
+      console.log(user);
+
+      router.push('/');
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -37,7 +44,7 @@ const AuthForm: FC<{ mode: 'signin' | 'signup' }> = ({ mode }) => {
           borderBottom: 'white 1px solid',
         }}
       >
-        <NextImage src="/logo.svg" height={60} width={120} />
+        <NextImage src="/trax.svg" height={60} width={120} />
       </Flex>
       <Flex
         sx={{
@@ -55,11 +62,13 @@ const AuthForm: FC<{ mode: 'signin' | 'signup' }> = ({ mode }) => {
         >
           <form onSubmit={handleSubmit}>
             <Input
+              required
               placeholder="email"
               type="email"
               onChange={(event) => setEmail(event.target.value)}
             />
             <Input
+              required
               placeholder="password"
               type="password"
               onChange={(event) => setPassword(event.target.value)}
